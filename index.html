@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="מערכת ניהול פנימית לווילה להשכרה">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Villa Manager</title>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="brand">VILLA MANAGER</div>
+      <div class="subtitle">ניהול פנימי לווילה</div>
+    </div>
+    <button class="ghost" id="installBtn" hidden>התקנה</button>
+  </header>
+
+  <nav class="tabs" aria-label="ניווט">
+    <button class="tab active" data-view="dashboard">ראשי</button>
+    <button class="tab" data-view="bookings">הזמנות</button>
+    <button class="tab" data-view="calendar">יומן</button>
+    <button class="tab" data-view="money">כספים</button>
+    <button class="tab" data-view="tasks">תפעול</button>
+    <button class="tab" data-view="settings">גיבוי</button>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="view active">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">תמונת מצב</div>
+          <h1 id="todayTitle">היום</h1>
+        </div>
+        <button class="primary" data-action="new-booking">+ הזמנה חדשה</button>
+      </div>
+
+      <div class="kpis">
+        <article class="card kpi"><span>הזמנות החודש</span><strong id="kpiBookings">0</strong></article>
+        <article class="card kpi"><span>הכנסות החודש</span><strong id="kpiRevenue">₪0</strong></article>
+        <article class="card kpi"><span>יתרות פתוחות</span><strong id="kpiOutstanding">₪0</strong></article>
+        <article class="card kpi"><span>רווח החודש</span><strong id="kpiProfit">₪0</strong></article>
+      </div>
+
+      <div class="grid2">
+        <article class="card">
+          <div class="section-title">מגיעים היום</div>
+          <div id="arrivalsToday" class="stack empty">אין כניסות היום</div>
+        </article>
+        <article class="card">
+          <div class="section-title">יוצאים היום</div>
+          <div id="departuresToday" class="stack empty">אין יציאות היום</div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="section-head">
+          <div class="section-title">7 הימים הקרובים</div>
+          <button class="linkbtn" data-view-jump="calendar">לוח שנה</button>
+        </div>
+        <div id="upcoming" class="stack empty">אין הזמנות קרובות</div>
+      </article>
+
+      <article class="card warning-card" id="collectionCard">
+        <div class="section-title">דורש טיפול</div>
+        <div id="attention" class="stack empty">הכול מסודר</div>
+      </article>
+    </section>
+
+    <section id="bookings" class="view">
+      <div class="section-head sticky-head">
+        <div>
+          <div class="eyebrow">ניהול</div>
+          <h2>הזמנות</h2>
+        </div>
+        <button class="primary" data-action="new-booking">+ חדשה</button>
+      </div>
+
+      <div class="toolbar">
+        <input id="bookingSearch" class="input" placeholder="חיפוש לפי שם / טלפון">
+        <select id="bookingFilter" class="input">
+          <option value="all">כל ההזמנות</option>
+          <option value="active">פעילות</option>
+          <option value="open-balance">יתרה פתוחה</option>
+          <option value="future">עתידיות</option>
+          <option value="cancelled">מבוטלות</option>
+        </select>
+      </div>
+      <div id="bookingsList" class="stack"></div>
+    </section>
+
+    <section id="calendar" class="view">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">תפוסה</div>
+          <h2 id="calendarTitle">יומן</h2>
+        </div>
+        <div class="calendar-nav">
+          <button class="ghost small" id="prevMonth">‹</button>
+          <button class="ghost small" id="todayMonth">היום</button>
+          <button class="ghost small" id="nextMonth">›</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="dot paid"></i> שולם</span>
+        <span><i class="dot deposit"></i> מקדמה</span>
+        <span><i class="dot pending"></i> ממתין</span>
+        <span><i class="dot blocked"></i> חסום</span>
+      </div>
+      <div class="calendar card">
+        <div class="weekdays"><span>א</span><span>ב</span><span>ג</span><span>ד</span><span>ה</span><span>ו</span><span>ש</span></div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </div>
+    </section>
+
+    <section id="money" class="view">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">בקרה כספית</div>
+          <h2>כספים</h2>
+        </div>
+        <button class="primary" data-action="new-expense">+ הוצאה</button>
+      </div>
+
+      <div class="kpis">
+        <article class="card kpi"><span>סה״כ הזמנות</span><strong id="moneyBooked">₪0</strong></article>
+        <article class="card kpi"><span>התקבל בפועל</span><strong id="moneyReceived">₪0</strong></article>
+        <article class="card kpi"><span>נותר לגבייה</span><strong id="moneyOutstanding">₪0</strong></article>
+        <article class="card kpi"><span>הוצאות</span><strong id="moneyExpenses">₪0</strong></article>
+      </div>
+
+      <article class="card">
+        <div class="section-title">יתרות פתוחות</div>
+        <div id="openBalances" class="stack empty">אין יתרות פתוחות</div>
+      </article>
+
+      <article class="card">
+        <div class="section-head">
+          <div class="section-title">הוצאות</div>
+          <select id="expenseMonth" class="input compact"></select>
+        </div>
+        <div id="expensesList" class="stack empty">אין הוצאות</div>
+      </article>
+    </section>
+
+    <section id="tasks" class="view">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">צ׳ק-אין / צ׳ק-אאוט</div>
+          <h2>תפעול</h2>
+        </div>
+      </div>
+      <article class="card">
+        <div class="section-title">משימות קרובות</div>
+        <div id="opsList" class="stack empty">אין משימות קרובות</div>
+      </article>
+    </section>
+
+    <section id="settings" class="view">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">מידע</div>
+          <h2>גיבוי והעברה</h2>
+        </div>
+      </div>
+
+      <article class="card">
+        <div class="section-title">גיבוי מלא</div>
+        <p class="muted">המידע בגרסה הזו נשמר במכשיר. מומלץ לייצא גיבוי בקביעות.</p>
+        <div class="actions">
+          <button class="primary" id="exportBackup">ייצוא גיבוי JSON</button>
+          <label class="ghost file-btn">ייבוא גיבוי<input type="file" id="importBackup" accept=".json"></label>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-title">ייצוא לאקסל</div>
+        <p class="muted">מוריד CSV של ההזמנות לפתיחה ב-Excel או Google Sheets.</p>
+        <button class="ghost" id="exportCsv">ייצוא הזמנות CSV</button>
+      </article>
+
+      <article class="card danger-zone">
+        <div class="section-title">איפוס</div>
+        <p class="muted">מוחק את כל המידע מהמכשיר הנוכחי.</p>
+        <button class="danger" id="resetData">מחק את כל הנתונים</button>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="bookingDialog" class="modal">
+    <form method="dialog" id="bookingForm">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">הזמנה</div>
+          <h3 id="bookingDialogTitle">הזמנה חדשה</h3>
+        </div>
+        <button class="iconbtn" value="cancel" type="button" data-close="bookingDialog">×</button>
+      </div>
+
+      <input type="hidden" id="bookingId">
+      <div class="form-grid">
+        <label>שם אורח<input class="input" id="guestName" required></label>
+        <label>טלפון<input class="input" id="guestPhone" inputmode="tel"></label>
+        <label>כניסה<input class="input" type="date" id="checkIn" required></label>
+        <label>יציאה<input class="input" type="date" id="checkOut" required></label>
+        <label>מספר אורחים<input class="input" type="number" min="1" id="guestCount" value="2"></label>
+        <label>מקור ההזמנה
+          <select class="input" id="source">
+            <option>וואטסאפ</option><option>טלפון</option><option>Booking</option><option>Airbnb</option><option>פייסבוק</option><option>אינסטגרם</option><option>לקוח חוזר</option><option>אחר</option>
+          </select>
+        </label>
+        <label>מחיר כולל ₪<input class="input" type="number" min="0" step="1" id="totalPrice" value="0"></label>
+        <label>מקדמה / שולם ₪<input class="input" type="number" min="0" step="1" id="paidAmount" value="0"></label>
+        <label>פיקדון נזק ₪<input class="input" type="number" min="0" step="1" id="damageDeposit" value="0"></label>
+        <label>אמצעי תשלום
+          <select class="input" id="paymentMethod"><option>ביט</option><option>העברה בנקאית</option><option>מזומן</option><option>אשראי</option><option>PayBox</option><option>אחר</option></select>
+        </label>
+        <label>סטטוס
+          <select class="input" id="status">
+            <option value="pending">ממתין</option>
+            <option value="deposit">מקדמה שולמה</option>
+            <option value="paid">שולם מלא</option>
+            <option value="blocked">חסום / שימוש עצמי</option>
+            <option value="cancelled">בוטל</option>
+          </select>
+        </label>
+        <label>שעת כניסה<input class="input" type="time" id="checkInTime" value="15:00"></label>
+        <label>שעת יציאה<input class="input" type="time" id="checkOutTime" value="11:00"></label>
+        <label>עמלת אתר / תיווך ₪<input class="input" type="number" min="0" step="1" id="channelFee" value="0"></label>
+      </div>
+      <label class="full">הערות<textarea class="input" id="notes" rows="3" placeholder="בקשות מיוחדות, ילדים, אירוע, הערות גבייה..."></textarea></label>
+
+      <div id="conflictBox" class="alert" hidden></div>
+
+      <div class="modal-actions">
+        <button class="primary" type="submit">שמור</button>
+        <button class="ghost" type="button" data-close="bookingDialog">ביטול</button>
+        <button class="danger subtle" type="button" id="deleteBooking" hidden>מחיקה</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="expenseDialog" class="modal">
+    <form method="dialog" id="expenseForm">
+      <div class="modal-head">
+        <div><div class="eyebrow">הוצאה</div><h3>רישום הוצאה</h3></div>
+        <button class="iconbtn" type="button" data-close="expenseDialog">×</button>
+      </div>
+      <div class="form-grid">
+        <label>תאריך<input class="input" type="date" id="expenseDate" required></label>
+        <label>סכום ₪<input class="input" type="number" min="0" step="1" id="expenseAmount" required></label>
+        <label>קטגוריה
+          <select class="input" id="expenseCategory">
+            <option>ניקיון</option><option>תחזוקה</option><option>בריכה</option><option>חשמל/מים</option><option>כביסה</option><option>ציוד</option><option>שיווק</option><option>עמלה</option><option>אחר</option>
+          </select>
+        </label>
+        <label>תיאור<input class="input" id="expenseDescription" placeholder="למשל: ניקיון אחרי אורחים"></label>
+      </div>
+      <div class="modal-actions">
+        <button class="primary" type="submit">שמור</button>
+        <button class="ghost" type="button" data-close="expenseDialog">ביטול</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
